@@ -40,5 +40,6 @@ yarn-error.log*
 *.tsbuildinfo
 next-env.d.ts
 
-#VS trash
-.vs/
+#visual studio
+.vs
+
