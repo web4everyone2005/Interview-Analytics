@@ -22,7 +22,28 @@ const API_TIMEOUT = Number(process.env.NEXT_PUBLIC_API_TIMEOUT) || 10000;
 const ACCESS_TOKEN_KEY = "access_token";
 const REFRESH_TOKEN_KEY = "refresh_token";
 
-// ─── Helpers: LocalStorage ─────────────────────────────────────
+// Tên cookie phải trùng với COOKIE_NAME trong src/proxy.ts
+const ACCESS_TOKEN_COOKIE = "access_token";
+
+// ─── Helpers: Cookie (dùng cho proxy.ts chạy trên Edge Runtime) ──
+// proxy.ts không thể đọc localStorage, chỉ đọc được cookie.
+// Vì vậy access_token phải được ghi vào cookie mỗi khi setTokens().
+const cookieHelper = {
+  set: (name: string, value: string, days = 7): void => {
+    if (typeof document === "undefined") return;
+    const expires = new Date(
+      Date.now() + days * 24 * 60 * 60 * 1000
+    ).toUTCString();
+    // SameSite=Lax: an toàn với CSRF, hoạt động được khi redirect
+    document.cookie = `${name}=${encodeURIComponent(value)}; expires=${expires}; path=/; SameSite=Lax`;
+  },
+  remove: (name: string): void => {
+    if (typeof document === "undefined") return;
+    document.cookie = `${name}=; expires=Thu, 01 Jan 1970 00:00:00 GMT; path=/; SameSite=Lax`;
+  },
+};
+
+// ─── Helpers: LocalStorage + Cookie ───────────────────────────
 export const tokenStorage = {
   getAccessToken: (): string | null => {
     if (typeof window === "undefined") return null;
@@ -35,10 +56,14 @@ export const tokenStorage = {
   setTokens: (accessToken: string, refreshToken: string): void => {
     localStorage.setItem(ACCESS_TOKEN_KEY, accessToken);
     localStorage.setItem(REFRESH_TOKEN_KEY, refreshToken);
+    // Ghi cookie để proxy.ts (Edge Runtime) có thể đọc được
+    cookieHelper.set(ACCESS_TOKEN_COOKIE, accessToken);
   },
   clearTokens: (): void => {
     localStorage.removeItem(ACCESS_TOKEN_KEY);
     localStorage.removeItem(REFRESH_TOKEN_KEY);
+    // Xóa cookie để proxy.ts biết đã logout
+    cookieHelper.remove(ACCESS_TOKEN_COOKIE);
   },
 };
 
