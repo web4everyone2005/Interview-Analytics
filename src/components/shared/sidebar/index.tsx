@@ -18,6 +18,7 @@ import {
   ChevronRight,
   Brain,
 } from "lucide-react";
+import { useMe } from "@/hooks/useUser";
 
 // ─── Types ────────────────────────────────────────────────────
 
@@ -80,12 +81,7 @@ const coreFlowItems: CoreFlowItem[] = [
   },
 ];
 
-// ─── Mock user (thay bằng auth context thực tế) ───────────────
-const mockUser = {
-  name: "HR Manager",
-  email: "hr@company.vn",
-  initials: "H",
-};
+
 
 // ─── Component ────────────────────────────────────────────────
 
@@ -94,6 +90,8 @@ export default function Sidebar() {
 
   const isActive = (href: string) =>
     pathname === href || pathname.startsWith(href + "/");
+
+  const { data, isLoading, error } = useMe();
 
   return (
     <aside className="flex flex-col w-[240px] min-h-screen bg-[#0f1117] border-r border-white/[0.06] px-3 py-5 shrink-0">
@@ -128,17 +126,15 @@ export default function Sidebar() {
                 className={`
                   group flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium
                   transition-all duration-150 relative
-                  ${
-                    active
-                      ? "bg-white/10 text-white"
-                      : "text-white/50 hover:text-white/80 hover:bg-white/[0.05]"
+                  ${active
+                    ? "bg-white/10 text-white"
+                    : "text-white/50 hover:text-white/80 hover:bg-white/[0.05]"
                   }
                 `}
               >
                 <span
-                  className={`shrink-0 transition-colors duration-150 ${
-                    active ? "text-white" : "text-white/40 group-hover:text-white/60"
-                  }`}
+                  className={`shrink-0 transition-colors duration-150 ${active ? "text-white" : "text-white/40 group-hover:text-white/60"
+                    }`}
                 >
                   {item.icon}
                 </span>
@@ -176,10 +172,9 @@ export default function Sidebar() {
                 className={`
                   group flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm
                   transition-all duration-150
-                  ${
-                    active
-                      ? "bg-white/10 text-white font-medium"
-                      : "text-white/50 hover:text-white/80 hover:bg-white/[0.05]"
+                  ${active
+                    ? "bg-white/10 text-white font-medium"
+                    : "text-white/50 hover:text-white/80 hover:bg-white/[0.05]"
                   }
                 `}
               >
@@ -208,14 +203,14 @@ export default function Sidebar() {
         {/* User info */}
         <div className="flex items-center gap-3 px-2 mb-3">
           <div className="flex items-center justify-center w-8 h-8 rounded-full bg-gradient-to-br from-blue-500 to-cyan-400 text-white text-xs font-bold shrink-0">
-            {mockUser.initials}
+            {data?.name?.[0]?.toUpperCase() ?? "?"}
           </div>
           <div className="min-w-0">
             <p className="text-white text-sm font-medium leading-tight truncate">
-              {mockUser.name}
+              {isLoading ? "Đang tải..." : (data?.name ?? "—")}
             </p>
             <p className="text-white/40 text-[11px] leading-tight truncate mt-0.5">
-              {mockUser.email}
+              {isLoading ? "" : (data?.email ?? "—")}
             </p>
           </div>
         </div>

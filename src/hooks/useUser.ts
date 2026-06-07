@@ -11,6 +11,7 @@ import useSWRMutation from "swr/mutation";
 import {
   createUser,
   deleteUser,
+  getMe,
   getUserById,
   getUsers,
   updateUser,
@@ -21,9 +22,26 @@ import { CreateUserPayload, UpdateUserPayload } from "@/models/user.model";
 // ─── SWR Keys ─────────────────────────────────────────────────
 // Dùng string prefix giúp dễ invalidate cache theo nhóm
 const USERS_KEY = "/users";
+const GET_ME_KEY = "/api/auth/me";
 const userKey = (id: string) => `/users/${id}`;
 
 // ─── Hooks ────────────────────────────────────────────────────
+
+
+
+export const useMe = (swrConfig?: SWRConfiguration) => {
+  const { data, error, isLoading, mutate } = useSWR(
+    GET_ME_KEY,
+    () => getMe(),
+    swrConfig
+  );
+  return {
+    data: data?.data ?? null,
+    isLoading,
+    error,
+    mutate,
+  };
+};
 
 /**
  * Lấy danh sách users với phân trang.
