@@ -19,7 +19,7 @@ export default function PrivateLayout({
       <Sidebar />
 
       {/* Vùng nội dung chính — children là trang hiện tại */}
-      <main className="flex-1 bg-gray-50 p-8 overflow-y-auto">{children}</main>
+      <main className="flex-1 bg-[#0d1117] p-8 overflow-y-auto">{children}</main>
     </div>
   );
 }

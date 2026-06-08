@@ -40,8 +40,13 @@ interface CoreFlowItem {
 const mainMenuItems: NavItem[] = [
   {
     label: "Dashboard",
-    href: "/dashboard",
+    href: "/dashboard/user",
     icon: <LayoutDashboard size={18} />,
+  },
+  {
+    label: "Tạo câu hỏi",
+    href: "/dashboard/questions",
+    icon: <Plus size={16} />,
   },
   {
     label: "Tạo phỏng vấn",
