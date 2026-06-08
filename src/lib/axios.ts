@@ -124,6 +124,13 @@ axiosInstance.interceptors.response.use(
       return Promise.reject(error);
     }
 
+    // ⚠️ Nếu chính request login/refresh thất bại (sai credentials)
+    // → KHÔNG redirect, trả lỗi thẳng về component để hiện thông báo
+    const url = originalRequest.url ?? "";
+    if (url.includes("/auth/login") || url.includes("/auth/refresh")) {
+      return Promise.reject(error);
+    }
+
     // Nếu đang refresh token → đưa request vào hàng đợi
     if (isRefreshing) {
       return new Promise((resolve, reject) => {
