@@ -18,7 +18,7 @@
 import { NextRequest, NextResponse } from "next/server";
 
 // ─── Cấu hình routes ──────────────────────────────────────────
-const PUBLIC_ROUTES = ["/login"];
+const PUBLIC_ROUTES = ["/login", "/register"];
 const AUTH_REDIRECT_WHEN_LOGGED_IN = "/dashboard"; // Trang mặc định sau khi đăng nhập
 const LOGIN_PAGE = "/login";
 const COOKIE_NAME = "access_token";

@@ -6,7 +6,14 @@
 // ============================================================
 
 import axiosInstance, { tokenStorage } from "@/lib/axios";
-import { LoginPayload, LoginResponse, LoginResponseData } from "@/models/auth.model";
+import {
+  LoginPayload,
+  LoginResponse,
+  LoginResponseData,
+  RegisterPayload,
+  RegisterResponse,
+  RegisterResponseData,
+} from "@/models/auth.model";
 
 /**
  * Đăng nhập với email và password.
@@ -32,9 +39,34 @@ export const login = async (
 };
 
 /**
- * Đăng xuất - xoá token khỏi localStorage.
- * Nếu BE có endpoint logout, gọi thêm ở đây.
+ * Đăng ký tài khoản mới.
+ * POST /auth/register
+ *
+ * Tự động lưu accessToken sau khi đăng ký thành công.
+ *
+ * @returns RegisterResponseData - { user, accessToken }
  */
-export const logout = (): void => {
-  tokenStorage.clearTokens();
+export const register = async (
+  payload: RegisterPayload
+): Promise<RegisterResponseData> => {
+  const { data } = await axiosInstance.post<RegisterResponse>(
+    "/auth/register",
+    payload
+  );
+
+  // Lưu token vào localStorage (vì register không trả về refreshToken nên truyền rỗng)
+  tokenStorage.setTokens(data.data.accessToken, "");
+
+  return data.data;
 };
+
+export const logout = async (): Promise<void> => {
+  try {
+    await axiosInstance.post("/auth/logout");
+  } catch (error) {
+    console.error("Backend logout failed:", error);
+  } finally {
+    tokenStorage.clearTokens();
+  }
+};
+

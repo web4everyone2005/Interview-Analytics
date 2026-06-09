@@ -8,7 +8,7 @@
 // ============================================================
 
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import {
   LayoutDashboard,
   Plus,
@@ -17,8 +17,10 @@ import {
   Settings,
   ChevronRight,
   Brain,
+  LogOut,
 } from "lucide-react";
 import { useMe } from "@/hooks/useUser";
+import { logout } from "@/services/auth.service";
 
 // ─── Types ────────────────────────────────────────────────────
 
@@ -92,11 +94,17 @@ const coreFlowItems: CoreFlowItem[] = [
 
 export default function Sidebar() {
   const pathname = usePathname();
+  const router = useRouter();
 
   const isActive = (href: string) =>
     pathname === href || pathname.startsWith(href + "/");
 
-  const { data, isLoading, error } = useMe();
+  const { data, isLoading } = useMe();
+
+  const handleLogout = async () => {
+    await logout();
+    router.push("/login");
+  };
 
   return (
     <aside className="flex flex-col w-[240px] min-h-screen bg-[#0f1117] border-r border-white/[0.06] px-3 py-5 shrink-0">
@@ -231,6 +239,18 @@ export default function Sidebar() {
           <Settings size={14} />
           <span>Cài đặt</span>
         </Link>
+
+        {/* Logout button */}
+        <button
+          onClick={handleLogout}
+          className="flex items-center justify-center gap-2 w-full py-2 mt-2 rounded-lg
+            bg-red-500/10 hover:bg-red-500/20 active:scale-95
+            text-red-400 hover:text-red-300
+            text-sm font-medium transition-all duration-150 cursor-pointer"
+        >
+          <LogOut size={14} />
+          <span>Đăng xuất</span>
+        </button>
       </div>
     </aside>
   );
