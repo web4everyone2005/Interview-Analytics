@@ -9,6 +9,14 @@ import axiosInstance from "@/lib/axios";
 import { ApiResponse, PaginatedResponse, PaginationParams } from "@/models/common.model";
 import { CreateUserPayload, UpdateUserPayload, User } from "@/models/user.model";
 
+
+
+export const getMe = async (): Promise<ApiResponse<User>> => {
+  const { data } = await axiosInstance.get<ApiResponse<User>>("/auth/me");
+  return data;
+}
+
+
 /**
  * Lấy danh sách users có phân trang.
  * GET /users?page=1&limit=10

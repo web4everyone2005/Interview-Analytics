@@ -5,8 +5,7 @@
 // Không chứa business logic, không biết về service hay hook.
 // ============================================================
 
-import { LandingPage } from "@/components/features/users/pages/LandingPage/page";
-import { UserList } from "@/components/features/users/UserList";
+import { LandingPage } from "@/components/pages/LandingPage/page";
 
 export default function Home() {
   return (
