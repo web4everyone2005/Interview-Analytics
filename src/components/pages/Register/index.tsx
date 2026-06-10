@@ -19,7 +19,6 @@ import {
   Shield,
   Loader2,
   ChevronLeft,
-  User,
   CheckCircle2,
   AlertCircle,
 } from "lucide-react";

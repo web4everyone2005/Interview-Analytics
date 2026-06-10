@@ -8,9 +8,8 @@
 // ============================================================
 
 import { useUsers } from "@/hooks/useUser";
-import { User as UserModel, UserRole } from "@/models/user.model";
+import { User as UserModel } from "@/models/user.model";
 import { Users, MoreHorizontal } from "lucide-react";
-import { use } from "react";
 
 // ─── Avatar ────────────────────────────────────────────────────
 function CandidateAvatar({ name, index }: { name: string; index: number }) {

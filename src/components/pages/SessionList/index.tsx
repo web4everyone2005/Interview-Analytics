@@ -9,6 +9,7 @@
 
 import { useSessions } from "@/hooks/useSession";
 import { Session, SessionStatus } from "@/models/session.model";
+import { getEntityLabel } from "@/lib/entity";
 import { Calendar, Clock, MoreHorizontal, User, Users } from "lucide-react";
 
 // ─── Status Badge ──────────────────────────────────────────────
@@ -25,6 +26,12 @@ const STATUS_CONFIG: Record<
   },
   [SessionStatus.IN_PROGRESS]: {
     label: "Đang xử lý",
+    bg: "bg-purple-500/10",
+    text: "text-purple-400",
+    dot: "bg-purple-400",
+  },
+  [SessionStatus.ONGOING]: {
+    label: "Đang diễn ra",
     bg: "bg-purple-500/10",
     text: "text-purple-400",
     dot: "bg-purple-400",
@@ -104,6 +111,18 @@ function SkeletonRow() {
 
 function SessionRow({ session, index }: { session: Session; index: number }) {
   const date = new Date(session.createdAt);
+  const candidateName =
+    session.candidate_name ??
+    getEntityLabel(session.candidate_profile_id, "Ứng viên");
+  const candidateEmail =
+    session.candidate_email ??
+    (typeof session.candidate_profile_id === "object"
+      ? session.candidate_profile_id.email
+      : "");
+  const title =
+    session.title ?? getEntityLabel(session.job_position_id, "Phiên phỏng vấn");
+  const conductorName =
+    session.hr_id?.name ?? getEntityLabel(session.conductor_id, "—");
   const formattedDate = date.toLocaleDateString("vi-VN", {
     day: "2-digit",
     month: "2-digit",
@@ -121,22 +140,22 @@ function SessionRow({ session, index }: { session: Session; index: number }) {
         hover:bg-white/3 transition-colors duration-150 cursor-pointer"
     >
       {/* Avatar */}
-      <CandidateAvatar name={session.candidate_name} index={index} />
+      <CandidateAvatar name={candidateName} index={index} />
 
       {/* Info */}
       <div className="flex-1 min-w-0">
         <p className="text-white text-sm font-medium leading-tight truncate">
-          {session.candidate_name}
+          {candidateName}
         </p>
         <p className="text-white/40 text-xs leading-tight mt-0.5 truncate">
-          {session.title}
+          {candidateEmail || title}
         </p>
       </div>
 
       {/* HR */}
       <div className="hidden md:flex items-center gap-1.5 text-white/40 text-xs">
         <User size={12} />
-        <span>{session.hr_id?.name ?? "—"}</span>
+        <span>{conductorName}</span>
       </div>
 
       {/* Room code */}

@@ -15,7 +15,7 @@ import axios, {
 
 // ─── Constants ────────────────────────────────────────────────
 const API_BASE_URL =
-  process.env.NEXT_PUBLIC_API_BASE_URL || "http://localhost:3001/api";
+  process.env.NEXT_PUBLIC_API_BASE_URL || "http://localhost:5000/api/v1";
 
 const API_TIMEOUT = Number(process.env.NEXT_PUBLIC_API_TIMEOUT) || 10000;
 
@@ -53,9 +53,11 @@ export const tokenStorage = {
     if (typeof window === "undefined") return null;
     return localStorage.getItem(REFRESH_TOKEN_KEY);
   },
-  setTokens: (accessToken: string, refreshToken: string): void => {
+  setTokens: (accessToken: string, refreshToken?: string): void => {
     localStorage.setItem(ACCESS_TOKEN_KEY, accessToken);
-    localStorage.setItem(REFRESH_TOKEN_KEY, refreshToken);
+    if (refreshToken) {
+      localStorage.setItem(REFRESH_TOKEN_KEY, refreshToken);
+    }
     // Ghi cookie để proxy.ts (Edge Runtime) có thể đọc được
     cookieHelper.set(ACCESS_TOKEN_COOKIE, accessToken);
   },
@@ -71,8 +73,8 @@ export const tokenStorage = {
 const axiosInstance: AxiosInstance = axios.create({
   baseURL: API_BASE_URL,
   timeout: API_TIMEOUT,
+  withCredentials: true,
   headers: {
-    "Content-Type": "application/json",
     Accept: "application/json",
   },
 });
@@ -149,22 +151,15 @@ axiosInstance.interceptors.response.use(
     originalRequest._retry = true;
     isRefreshing = true;
 
-    const refreshToken = tokenStorage.getRefreshToken();
-
-    if (!refreshToken) {
-      // Không có refresh token → logout
-      tokenStorage.clearTokens();
-      window.location.href = "/login";
-      return Promise.reject(error);
-    }
-
     try {
-      // ⚠️ Đổi endpoint này cho khớp với BE của bạn
-      const { data } = await axios.post(`${API_BASE_URL}/auth/refresh`, {
-        refreshToken,
-      });
+      const { data } = await axios.post(
+        `${API_BASE_URL}/auth/refresh`,
+        undefined,
+        { withCredentials: true }
+      );
 
-      const { accessToken, refreshToken: newRefreshToken } = data;
+      const accessToken = data?.data?.accessToken ?? data?.accessToken;
+      const newRefreshToken = data?.data?.refreshToken ?? data?.refreshToken;
       tokenStorage.setTokens(accessToken, newRefreshToken);
 
       // Cập nhật header cho request gốc

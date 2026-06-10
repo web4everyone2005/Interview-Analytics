@@ -1,43 +1,40 @@
-// ============================================================
-// Tầng MODEL - Question
-// Mô phỏng kiểu dữ liệu Question mà BE gửi về / FE gửi lên
-// ============================================================
+import { QuestionCategory } from "./question-category.model";
+import { Skill } from "./skill.model";
 
-/**
- * Kiểu Question BE trả về (response).
- */
+export type QuestionCategoryRef = string | Pick<QuestionCategory, "_id" | "name">;
+export type QuestionSkillRef = string | Pick<Skill, "_id" | "name">;
+
 export interface Question {
   id: string;
+  category_id: QuestionCategoryRef;
+  assessed_skills: QuestionSkillRef[];
   content: string;
   expected_answer: string;
-  domain: string;
-  keywords: string[];
-  embedding: number[]; // Vector embedding — thường rỗng [] khi trả về FE
-  createdAt: string;   // ISO 8601
-  updatedAt: string;   // ISO 8601
+  embedding: number[];
+  score?: number;
+  createdAt?: string;
+  updatedAt?: string;
 }
 
-/**
- * Response của GET /questions.
- * Không dùng ApiResponse chuẩn vì BE trả { data, total } trực tiếp.
- */
 export interface QuestionListResponse {
   data: Question[];
   total: number;
 }
 
-/**
- * Payload khi tạo câu hỏi mới (POST /questions).
- */
 export interface CreateQuestionPayload {
+  category_id: string;
+  assessed_skills?: string[];
   content: string;
   expected_answer: string;
-  domain: string;
-  keywords?: string[];
 }
 
-/**
- * Payload khi cập nhật câu hỏi (PUT /questions/:id).
- * Tất cả field đều optional.
- */
 export type UpdateQuestionPayload = Partial<CreateQuestionPayload>;
+
+export interface QuestionFilterParams {
+  category_id?: string;
+}
+
+export interface QuestionImportResponse {
+  message: string;
+  data: Question[];
+}

@@ -54,8 +54,7 @@ export const register = async (
     payload
   );
 
-  // Lưu token vào localStorage (vì register không trả về refreshToken nên truyền rỗng)
-  tokenStorage.setTokens(data.data.accessToken, "");
+  tokenStorage.setTokens(data.data.accessToken);
 
   return data.data;
 };

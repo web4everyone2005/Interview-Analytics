@@ -21,7 +21,7 @@ export interface LoginPayload {
 export interface LoginResponseData {
   user: User;
   accessToken: string;
-  refreshToken: string;
+  refreshToken?: string;
 }
 
 /**
