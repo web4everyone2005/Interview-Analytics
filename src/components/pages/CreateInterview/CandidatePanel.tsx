@@ -12,6 +12,8 @@ import {
 interface CandidatePanelProps {
   candidates: CandidateProfile[];
   selectedCandidateId: string;
+  locked?: boolean;
+  lockedMessage?: string;
   onSelectCandidate: (id: string) => void;
   onCreateCandidate: (payload: {
     full_name: string;
@@ -24,6 +26,8 @@ interface CandidatePanelProps {
 export function CandidatePanel({
   candidates,
   selectedCandidateId,
+  locked,
+  lockedMessage,
   onSelectCandidate,
   onCreateCandidate,
   isCreating,
@@ -52,6 +56,8 @@ export function CandidatePanel({
     <Panel
       title="Candidate"
       eyebrow="Step 2"
+      locked={locked}
+      lockedMessage={lockedMessage}
       actions={<StatusPill tone={selectedCandidate ? "green" : "neutral"}>{selectedCandidate ? "Selected" : "Required"}</StatusPill>}
     >
       <div className="grid gap-4 xl:grid-cols-[minmax(0,1fr)_280px]">

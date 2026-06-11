@@ -14,6 +14,8 @@ interface KnowledgeUploadPanelProps {
   jobPositions: JobPosition[];
   selectedJobId: string;
   documents: KnowledgeDocument[];
+  locked?: boolean;
+  lockedMessage?: string;
   onUpload: (payload: {
     file: File;
     title?: string;
@@ -26,6 +28,8 @@ export function KnowledgeUploadPanel({
   jobPositions,
   selectedJobId,
   documents,
+  locked,
+  lockedMessage,
   onUpload,
   isUploading,
 }: KnowledgeUploadPanelProps) {
@@ -57,6 +61,8 @@ export function KnowledgeUploadPanel({
     <Panel
       title="Knowledge base"
       eyebrow="Step 4"
+      locked={locked}
+      lockedMessage={lockedMessage}
       actions={<StatusPill tone={hasProcessedDocument ? "green" : "amber"}>{hasProcessedDocument ? "Ready" : "Pending"}</StatusPill>}
     >
       <div className="grid gap-4 xl:grid-cols-[minmax(0,1fr)_320px]">

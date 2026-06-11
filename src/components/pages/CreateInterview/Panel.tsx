@@ -1,13 +1,23 @@
 import { ReactNode } from "react";
+import { Lock } from "lucide-react";
 
 interface PanelProps {
   title: string;
   eyebrow?: string;
   actions?: ReactNode;
+  locked?: boolean;
+  lockedMessage?: string;
   children: ReactNode;
 }
 
-export function Panel({ title, eyebrow, actions, children }: PanelProps) {
+export function Panel({
+  title,
+  eyebrow,
+  actions,
+  locked = false,
+  lockedMessage,
+  children,
+}: PanelProps) {
   return (
     <section className="rounded-lg border border-white/8 bg-white/[0.03] overflow-hidden">
       <div className="flex items-center justify-between gap-4 border-b border-white/8 px-4 py-3">
@@ -23,7 +33,15 @@ export function Panel({ title, eyebrow, actions, children }: PanelProps) {
         </div>
         {actions}
       </div>
-      <div className="p-4">{children}</div>
+      {locked && (
+        <div className="flex items-center gap-2 border-b border-white/8 bg-amber-500/10 px-4 py-2 text-xs font-medium text-amber-200">
+          <Lock size={14} />
+          <span>{lockedMessage ?? "Complete the previous step first."}</span>
+        </div>
+      )}
+      <div className={`p-4 ${locked ? "pointer-events-none select-none opacity-45" : ""}`}>
+        {children}
+      </div>
     </section>
   );
 }

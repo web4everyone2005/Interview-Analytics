@@ -19,6 +19,8 @@ interface QuestionBankPanelProps {
   questions: Question[];
   selectedCategoryId: string;
   selectedQuestionIds: string[];
+  locked?: boolean;
+  lockedMessage?: string;
   onCategoryChange: (id: string) => void;
   onToggleQuestion: (id: string) => void;
   onCreateQuestion: (payload: {
@@ -42,6 +44,8 @@ export function QuestionBankPanel({
   questions,
   selectedCategoryId,
   selectedQuestionIds,
+  locked,
+  lockedMessage,
   onCategoryChange,
   onToggleQuestion,
   onCreateQuestion,
@@ -98,6 +102,8 @@ export function QuestionBankPanel({
     <Panel
       title="Question bank"
       eyebrow="Step 3"
+      locked={locked}
+      lockedMessage={lockedMessage}
       actions={<StatusPill tone={selectedQuestionIds.length ? "green" : "neutral"}>{selectedQuestionIds.length} selected</StatusPill>}
     >
       <div className="grid gap-4 xl:grid-cols-[minmax(0,1fr)_360px]">

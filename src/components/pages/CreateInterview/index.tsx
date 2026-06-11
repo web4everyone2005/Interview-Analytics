@@ -21,14 +21,14 @@ import {
   useUploadKnowledgeDocument,
 } from "@/hooks/useInterviewSetup";
 import { Session } from "@/models/session.model";
-import { CandidatePanel } from "./components/CandidatePanel";
-import { FlowHeader } from "./components/FlowHeader";
-import { JobPositionPanel } from "./components/JobPositionPanel";
-import { KnowledgeUploadPanel } from "./components/KnowledgeUploadPanel";
-import { QuestionBankPanel } from "./components/QuestionBankPanel";
-import { SelectionSummary } from "./components/SelectionSummary";
-import { SessionComposer } from "./components/SessionComposer";
-import { SkillCategoryPanel } from "./components/SkillCategoryPanel";
+import { CandidatePanel } from "./CandidatePanel";
+import { FlowHeader } from "./FlowHeader";
+import { JobPositionPanel } from "./JobPositionPanel";
+import { KnowledgeUploadPanel } from "./KnowledgeUploadPanel";
+import { QuestionBankPanel } from "./QuestionBankPanel";
+import { SelectionSummary } from "./SelectionSummary";
+import { SessionComposer } from "./SessionComposer";
+import { SkillCategoryPanel } from "./SkillCategoryPanel";
 
 interface CreatedSession {
   session: Session;
@@ -96,6 +96,21 @@ export default function CreateInterview() {
       documents.filter((document) => document.job_position_id === effectiveJobId),
     [documents, effectiveJobId]
   );
+  const hasSelectedJob = Boolean(selectedJob);
+  const hasSelectedCandidate = Boolean(selectedCandidate);
+  const hasSelectedQuestions = selectedQuestionIds.length > 0;
+  const hasReadyKnowledge = selectedDocuments.some(
+    (document) => document.is_processed
+  );
+  const candidateLocked = !hasSelectedJob;
+  const questionLocked = !hasSelectedJob || !hasSelectedCandidate;
+  const knowledgeLocked =
+    !hasSelectedJob || !hasSelectedCandidate || !hasSelectedQuestions;
+  const sessionLocked =
+    !hasSelectedJob ||
+    !hasSelectedCandidate ||
+    !hasSelectedQuestions ||
+    !hasReadyKnowledge;
 
   const showSuccess = (message: string) => {
     setNotice({ tone: "success", message });
@@ -229,6 +244,14 @@ export default function CreateInterview() {
       return;
     }
 
+    if (!hasReadyKnowledge) {
+      setNotice({
+        tone: "error",
+        message: "Upload and wait for a ready knowledge document before creating a session.",
+      });
+      return;
+    }
+
     try {
       const response = await createSessionMutation.trigger({
         job_position_id: effectiveJobId,
@@ -259,13 +282,10 @@ export default function CreateInterview() {
   };
 
   const checks = [
-    { label: "Job", complete: Boolean(selectedJob) },
-    { label: "Candidate", complete: Boolean(selectedCandidate) },
-    { label: "Questions", complete: selectedQuestionIds.length > 0 },
-    {
-      label: "Knowledge",
-      complete: selectedDocuments.some((document) => document.is_processed),
-    },
+    { label: "Job", complete: hasSelectedJob },
+    { label: "Candidate", complete: hasSelectedCandidate },
+    { label: "Questions", complete: hasSelectedQuestions },
+    { label: "Knowledge", complete: hasReadyKnowledge },
     { label: "Session", complete: Boolean(createdSession) },
   ];
 
@@ -320,6 +340,8 @@ export default function CreateInterview() {
           <CandidatePanel
             candidates={candidates}
             selectedCandidateId={effectiveCandidateId}
+            locked={candidateLocked}
+            lockedMessage="Select or create a job position before choosing a candidate."
             onSelectCandidate={setSelectedCandidateId}
             onCreateCandidate={handleCreateCandidate}
             isCreating={createCandidateMutation.isMutating}
@@ -332,6 +354,8 @@ export default function CreateInterview() {
           questions={questions}
           selectedCategoryId={effectiveCategoryId}
           selectedQuestionIds={selectedQuestionIds}
+          locked={questionLocked}
+          lockedMessage="Select a job position and candidate before preparing questions."
           onCategoryChange={setSelectedCategoryId}
           onToggleQuestion={toggleQuestion}
           onCreateQuestion={handleCreateQuestion}
@@ -345,6 +369,8 @@ export default function CreateInterview() {
           jobPositions={jobPositions}
           selectedJobId={effectiveJobId}
           documents={documents}
+          locked={knowledgeLocked}
+          lockedMessage="Select at least one question before uploading the knowledge base."
           onUpload={handleUploadKnowledge}
           isUploading={uploadKnowledgeMutation.isMutating}
         />
@@ -353,6 +379,9 @@ export default function CreateInterview() {
           selectedJob={selectedJob}
           selectedCandidate={selectedCandidate}
           selectedQuestionIds={selectedQuestionIds}
+          knowledgeReady={hasReadyKnowledge}
+          locked={sessionLocked}
+          lockedMessage="Complete job, candidate, questions, and a ready knowledge document first."
           scheduledAt={scheduledAt}
           onScheduledAtChange={setScheduledAt}
           onCreateSession={handleCreateSession}

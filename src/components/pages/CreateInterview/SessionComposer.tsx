@@ -20,6 +20,9 @@ interface SessionComposerProps {
   selectedJob?: JobPosition;
   selectedCandidate?: CandidateProfile;
   selectedQuestionIds: string[];
+  knowledgeReady: boolean;
+  locked?: boolean;
+  lockedMessage?: string;
   scheduledAt: string;
   onScheduledAtChange: (value: string) => void;
   onCreateSession: () => Promise<void>;
@@ -33,6 +36,9 @@ export function SessionComposer({
   selectedJob,
   selectedCandidate,
   selectedQuestionIds,
+  knowledgeReady,
+  locked,
+  lockedMessage,
   scheduledAt,
   onScheduledAtChange,
   onCreateSession,
@@ -44,7 +50,8 @@ export function SessionComposer({
   const canCreate =
     Boolean(selectedJob) &&
     Boolean(selectedCandidate) &&
-    selectedQuestionIds.length > 0;
+    selectedQuestionIds.length > 0 &&
+    knowledgeReady;
 
   const copyMagicUrl = async () => {
     if (!createdSession?.magicUrl) return;
@@ -55,6 +62,8 @@ export function SessionComposer({
     <Panel
       title="Session & invitation"
       eyebrow="Step 5"
+      locked={locked}
+      lockedMessage={lockedMessage}
       actions={<StatusPill tone={createdSession ? "green" : "neutral"}>{createdSession ? "Created" : "Draft"}</StatusPill>}
     >
       <div className="grid gap-4 xl:grid-cols-[minmax(0,1fr)_360px]">
