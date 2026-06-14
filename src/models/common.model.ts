@@ -8,8 +8,8 @@
  * BE thường trả về dạng: { success, message, data }
  */
 export interface ApiResponse<T> {
-  success: boolean;
-  message: string;
+  success?: boolean;
+  message?: string;
   data: T;
 }
 
@@ -17,8 +17,8 @@ export interface ApiResponse<T> {
  * Response có phân trang từ BE.
  */
 export interface PaginatedResponse<T> {
-  success: boolean;
-  message: string;
+  success?: boolean;
+  message?: string;
   data: T[];
   pagination: Pagination;
 }

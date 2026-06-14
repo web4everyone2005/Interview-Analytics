@@ -1,24 +1,30 @@
 import axiosInstance from "@/lib/axios";
 import { ApiResponse } from "@/models/common.model";
-import { KnowledgeDocument } from "@/models/knowledge.model";
+import {
+  KnowledgeDocument,
+  UploadKnowledgeResponseData,
+} from "@/models/knowledge.model";
 
-export const uploadKnowledgeDocument = async (
-  jobId: string,
-  file: File
-): Promise<ApiResponse<KnowledgeDocument>> => {
-  const formData = new FormData();
-  formData.append("job_position_id", jobId);
-  formData.append("file", file);
+export const uploadKnowledgeDocument = async (payload: {
+  file: File;
+  title?: string;
+  job_position_id: string;
+}): Promise<ApiResponse<UploadKnowledgeResponseData>> => {
+  const { data } = await axiosInstance.postForm<
+    ApiResponse<UploadKnowledgeResponseData>
+  >("/knowledge/upload", {
+    file: payload.file,
+    job_position_id: payload.job_position_id,
+    title: payload.title ?? "",
+  });
+  return data;
+};
 
-  const { data } = await axiosInstance.post<ApiResponse<KnowledgeDocument>>(
-    "/api/v1/knowledge/upload",
-    formData,
-    {
-      headers: {
-        "Content-Type": "multipart/form-data",
-      },
-    }
-  );
+export const getKnowledgeDocuments = async (): Promise<
+  ApiResponse<KnowledgeDocument[]>
+> => {
+  const { data } =
+    await axiosInstance.get<ApiResponse<KnowledgeDocument[]>>("/knowledge");
   return data;
 };
 
@@ -26,7 +32,7 @@ export const getKnowledgeDocumentsByJob = async (
   jobId: string
 ): Promise<ApiResponse<KnowledgeDocument[]>> => {
   const { data } = await axiosInstance.get<ApiResponse<KnowledgeDocument[]>>(
-    `/api/v1/knowledge?job_position_id=${jobId}`
+    `/knowledge?job_position_id=${jobId}`
   );
   return data;
 };

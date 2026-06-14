@@ -1,32 +1,23 @@
-// ============================================================
-// Tầng SERVICE - Question
-//
-// Chỉ có tầng này biết URL endpoint, params, payload cho Question.
-// Import axiosInstance từ lib/axios.
-// ============================================================
-
 import axiosInstance from "@/lib/axios";
 import { ApiResponse } from "@/models/common.model";
 import {
   CreateQuestionPayload,
   Question,
+  QuestionFilterParams,
+  QuestionImportResponse,
   QuestionListResponse,
   UpdateQuestionPayload,
 } from "@/models/question.model";
 
-/**
- * Lấy danh sách tất cả câu hỏi.
- * GET /questions → { data: Question[], total: number }
- */
-export const getQuestions = async (): Promise<QuestionListResponse> => {
-  const { data } = await axiosInstance.get<QuestionListResponse>("/questions");
+export const getQuestions = async (
+  params?: QuestionFilterParams
+): Promise<QuestionListResponse> => {
+  const { data } = await axiosInstance.get<QuestionListResponse>("/questions", {
+    params,
+  });
   return data;
 };
 
-/**
- * Lấy thông tin chi tiết một câu hỏi theo ID.
- * GET /questions/:id
- */
 export const getQuestionById = async (
   id: string
 ): Promise<ApiResponse<Question>> => {
@@ -36,10 +27,6 @@ export const getQuestionById = async (
   return data;
 };
 
-/**
- * Tạo câu hỏi mới.
- * POST /questions
- */
 export const createQuestion = async (
   payload: CreateQuestionPayload
 ): Promise<ApiResponse<Question>> => {
@@ -50,10 +37,6 @@ export const createQuestion = async (
   return data;
 };
 
-/**
- * Cập nhật câu hỏi theo ID.
- * PUT /questions/:id
- */
 export const updateQuestion = async (
   id: string,
   payload: UpdateQuestionPayload
@@ -65,15 +48,25 @@ export const updateQuestion = async (
   return data;
 };
 
-/**
- * Xóa câu hỏi theo ID.
- * DELETE /questions/:id
- */
 export const deleteQuestion = async (
   id: string
 ): Promise<ApiResponse<null>> => {
   const { data } = await axiosInstance.delete<ApiResponse<null>>(
     `/questions/${id}`
+  );
+  return data;
+};
+
+export const importQuestionsFromPdf = async (payload: {
+  file: File;
+  category_id: string;
+}): Promise<QuestionImportResponse> => {
+  const { data } = await axiosInstance.postForm<QuestionImportResponse>(
+    "/questions/import-pdf",
+    {
+      file: payload.file,
+      category_id: payload.category_id,
+    }
   );
   return data;
 };

@@ -1,77 +1,25 @@
 "use client";
 
 // ============================================================
-// Component - SessionList
+// Component - UserList
 //
-// Gọi useSessions hook và hiển thị danh sách phiên phỏng vấn.
-// Style dark theme khớp với thiết kế sidebar.
+// Gọi useUsers hook và hiển thị danh sách các thành viên HR.
+// Style dark theme đồng bộ với SessionList.
 // ============================================================
 
-import { useSessions } from "@/hooks/useSession";
-import { Session, SessionStatus } from "@/models/session.model";
-import { Calendar, Clock, MoreHorizontal, User, Users } from "lucide-react";
-
-// ─── Status Badge ──────────────────────────────────────────────
-
-const STATUS_CONFIG: Record<
-  string,
-  { label: string; bg: string; text: string; dot: string }
-> = {
-  [SessionStatus.SCHEDULED]: {
-    label: "Lịch hẹn",
-    bg: "bg-blue-500/10",
-    text: "text-blue-400",
-    dot: "bg-blue-400",
-  },
-  [SessionStatus.IN_PROGRESS]: {
-    label: "Đang xử lý",
-    bg: "bg-purple-500/10",
-    text: "text-purple-400",
-    dot: "bg-purple-400",
-  },
-  [SessionStatus.COMPLETED]: {
-    label: "Hoàn thành",
-    bg: "bg-emerald-500/10",
-    text: "text-emerald-400",
-    dot: "bg-emerald-400",
-  },
-  [SessionStatus.CANCELLED]: {
-    label: "Đã hủy",
-    bg: "bg-red-500/10",
-    text: "text-red-400",
-    dot: "bg-red-400",
-  },
-};
-
-function StatusBadge({ status }: { status: string }) {
-  const cfg = STATUS_CONFIG[status] ?? {
-    label: status,
-    bg: "bg-white/10",
-    text: "text-white/50",
-    dot: "bg-white/50",
-  };
-
-  return (
-    <span
-      className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium ${cfg.bg} ${cfg.text}`}
-    >
-      <span className={`w-1.5 h-1.5 rounded-full ${cfg.dot}`} />
-      {cfg.label}
-    </span>
-  );
-}
+import { useUsers } from "@/hooks/useUser";
+import { User as UserModel } from "@/models/user.model";
+import { Users, MoreHorizontal } from "lucide-react";
 
 // ─── Avatar ────────────────────────────────────────────────────
-
-const AVATAR_COLORS = [
-  "from-blue-500 to-cyan-400",
-  "from-purple-500 to-pink-400",
-  "from-emerald-500 to-teal-400",
-  "from-orange-500 to-amber-400",
-  "from-rose-500 to-pink-400",
-];
-
 function CandidateAvatar({ name, index }: { name: string; index: number }) {
+  const AVATAR_COLORS = [
+    "from-blue-500 to-cyan-400",
+    "from-purple-500 to-pink-400",
+    "from-emerald-500 to-teal-400",
+    "from-orange-500 to-amber-400",
+    "from-rose-500 to-pink-400",
+  ];
   const color = AVATAR_COLORS[index % AVATAR_COLORS.length];
   const initial = name?.[0]?.toUpperCase() ?? "?";
   return (
@@ -84,7 +32,6 @@ function CandidateAvatar({ name, index }: { name: string; index: number }) {
 }
 
 // ─── Skeleton Row ──────────────────────────────────────────────
-
 function SkeletonRow() {
   return (
     <div className="flex items-center gap-4 px-5 py-4 animate-pulse">
@@ -100,20 +47,8 @@ function SkeletonRow() {
   );
 }
 
-// ─── Session Row ───────────────────────────────────────────────
-
-function SessionRow({ session, index }: { session: Session; index: number }) {
-  const date = new Date(session.createdAt);
-  const formattedDate = date.toLocaleDateString("vi-VN", {
-    day: "2-digit",
-    month: "2-digit",
-    year: "numeric",
-  });
-  const formattedTime = date.toLocaleTimeString("vi-VN", {
-    hour: "2-digit",
-    minute: "2-digit",
-  });
-
+// ─── User Row ──────────────────────────────────────────────────
+function UserRow({ user, index }: { user: UserModel; index: number }) {
   return (
     <div
       className="group flex items-center gap-4 px-5 py-4
@@ -121,41 +56,37 @@ function SessionRow({ session, index }: { session: Session; index: number }) {
         hover:bg-white/3 transition-colors duration-150 cursor-pointer"
     >
       {/* Avatar */}
-      <CandidateAvatar name={session.candidate_name} index={index} />
+      <CandidateAvatar name={user.name} index={index} />
 
       {/* Info */}
       <div className="flex-1 min-w-0">
         <p className="text-white text-sm font-medium leading-tight truncate">
-          {session.candidate_name}
+          {user.name}
         </p>
         <p className="text-white/40 text-xs leading-tight mt-0.5 truncate">
-          {session.title}
+          {user.email}
         </p>
       </div>
 
-      {/* HR */}
+      {/* Role */}
       <div className="hidden md:flex items-center gap-1.5 text-white/40 text-xs">
-        <User size={12} />
-        <span>{session.hr_id?.name ?? "—"}</span>
-      </div>
-
-      {/* Room code */}
-      <div className="hidden lg:flex items-center gap-1.5">
-        <span className="text-white/20 text-[10px] font-mono tracking-wider">
-          #{session.room_code}
-        </span>
-      </div>
-
-      {/* Date */}
-      <div className="hidden sm:flex items-center gap-1.5 text-white/40 text-xs">
-        <Clock size={12} />
-        <span>
-          {formattedTime} · {formattedDate}
+        <span className="px-2 py-0.5 rounded bg-blue-500/10 text-blue-400 font-medium text-[10px]">
+          {user.role}
         </span>
       </div>
 
       {/* Status */}
-      <StatusBadge status={session.status} />
+      <div className="flex items-center gap-1.5">
+        <span
+          className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium ${user.isActive
+            ? "bg-emerald-500/10 text-emerald-400"
+            : "bg-red-500/10 text-red-400"
+            }`}
+        >
+          <span className={`w-1.5 h-1.5 rounded-full ${user.isActive ? "bg-emerald-400" : "bg-red-400"}`} />
+          {user.isActive ? "Hoạt động" : "Tạm khóa"}
+        </span>
+      </div>
 
       {/* Actions */}
       <button
@@ -170,9 +101,9 @@ function SessionRow({ session, index }: { session: Session; index: number }) {
 }
 
 // ─── Main Component ────────────────────────────────────────────
+export default function UserList() {
+  const { users, isLoading, error } = useUsers();
 
-export default function SessionList() {
-  const { sessions, isLoading, error } = useSessions();
 
   return (
     <div className="rounded-2xl bg-white/3 border border-white/6 overflow-hidden">
@@ -184,26 +115,21 @@ export default function SessionList() {
           </div>
           <div>
             <h2 className="text-white text-sm font-semibold">
-              Phỏng vấn gần đây
+              Thành viên HR tuyển dụng
             </h2>
             {!isLoading && !error && (
               <p className="text-white/30 text-[11px] mt-0.5">
-                {sessions.length} phiên phỏng vấn
+                {users.length} thành viên
               </p>
             )}
           </div>
-        </div>
-
-        <div className="flex items-center gap-1.5 text-white/30 text-xs">
-          <Calendar size={12} />
-          <span>Mới nhất trước</span>
         </div>
       </div>
 
       {/* Content */}
       {isLoading && (
         <div>
-          {Array.from({ length: 4 }).map((_, i) => (
+          {Array.from({ length: 3 }).map((_, i) => (
             <SkeletonRow key={i} />
           ))}
         </div>
@@ -215,7 +141,7 @@ export default function SessionList() {
             <span className="text-2xl">⚠️</span>
           </div>
           <p className="text-white/60 text-sm font-medium">
-            Không thể tải dữ liệu
+            Không thể tải dữ liệu thành viên
           </p>
           <p className="text-white/30 text-xs mt-1">
             Kiểm tra kết nối và thử lại
@@ -223,24 +149,21 @@ export default function SessionList() {
         </div>
       )}
 
-      {!isLoading && !error && sessions.length === 0 && (
+      {!isLoading && !error && users.length === 0 && (
         <div className="flex flex-col items-center justify-center py-16 text-center px-6">
           <div className="flex items-center justify-center w-12 h-12 rounded-2xl bg-white/5 mb-4">
             <Users size={22} className="text-white/20" />
           </div>
           <p className="text-white/60 text-sm font-medium">
-            Chưa có phiên phỏng vấn nào
-          </p>
-          <p className="text-white/30 text-xs mt-1">
-            Tạo phỏng vấn đầu tiên để bắt đầu
+            Không tìm thấy thành viên ứng viên nào
           </p>
         </div>
       )}
 
-      {!isLoading && !error && sessions.length > 0 && (
+      {!isLoading && !error && users.length > 0 && (
         <div>
-          {sessions.map((session, idx) => (
-            <SessionRow key={session.id} session={session} index={idx} />
+          {users.map((usr, idx) => (
+            <UserRow key={usr.id} user={usr} index={idx} />
           ))}
         </div>
       )}

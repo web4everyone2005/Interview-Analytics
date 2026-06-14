@@ -1,13 +1,22 @@
+export interface CandidateOwner {
+  _id: string;
+  name: string;
+  email: string;
+}
+
 export interface Candidate {
   id?: string;
   _id?: string;
-  owner_id?: string;
+  owner_id?: string | CandidateOwner;
   full_name: string;
   email: string;
   resume_url?: string;
   createdAt?: string;
   updatedAt?: string;
+  __v?: number;
 }
+
+export type CandidateProfile = Candidate;
 
 export interface CreateCandidatePayload {
   full_name: string;
@@ -15,8 +24,4 @@ export interface CreateCandidatePayload {
   resume_url?: string;
 }
 
-export interface UpdateCandidatePayload {
-  full_name?: string;
-  email?: string;
-  resume_url?: string;
-}
+export type UpdateCandidatePayload = Partial<CreateCandidatePayload>;

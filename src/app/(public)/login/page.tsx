@@ -9,6 +9,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import Link from "next/link";
 import {
   Brain,
   Eye,
@@ -395,6 +396,13 @@ export default function LoginPage() {
                     </>
                   )}
                 </button>
+
+                <p className="text-center text-xs mt-6" style={{ color: "var(--muted-foreground)" }}>
+                  Chưa có tài khoản?{" "}
+                  <Link href="/register" className="font-semibold transition-colors hover:text-white" style={{ color: "#22D3EE" }}>
+                    Đăng ký tài khoản mới
+                  </Link>
+                </p>
 
               </>
 

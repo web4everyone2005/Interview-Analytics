@@ -9,8 +9,11 @@
 // ============================================================
 
 import { Plus } from "lucide-react";
+import Link from "next/link";
 import { useMe } from "@/hooks/useUser";
-import SessionList from "@/components/pages/SessionList";
+import SessionList from "@/components/features/sessions/SessionList";
+import { UserRole } from "@/models/user.model";
+import UserList from "@/components/pages/UserList";
 
 export default function DashboardUserPage() {
   const { data: user, isLoading: userLoading } = useMe();
@@ -26,6 +29,8 @@ export default function DashboardUserPage() {
   const greeting = userLoading
     ? "Đang tải..."
     : `Xin chào, ${user?.name ?? "HR Manager"} 👋`;
+
+  const isHR = user?.role === UserRole.HR;
 
   return (
     <div className="min-h-full">
@@ -59,7 +64,8 @@ export default function DashboardUserPage() {
             <Plus size={16} />
             Tạo Câu Hỏi
           </button>
-          <button
+          <Link
+            href="/interviews/create"
             className="flex items-center gap-2 px-4 py-2.5 rounded-xl
               bg-blue-500 hover:bg-blue-400 active:scale-95
               text-white text-sm font-semibold
@@ -68,9 +74,16 @@ export default function DashboardUserPage() {
           >
             <Plus size={16} />
             Tạo phỏng vấn mới
-          </button>
+          </Link>
         </div>
       </div>
+
+      {/* ── User List (Only for HR) ─────────────────────────── */}
+      {isHR && (
+        <div className="mb-8">
+          <UserList />
+        </div>
+      )}
 
       {/* ── Session List ────────────────────────────────────── */}
       <SessionList />
