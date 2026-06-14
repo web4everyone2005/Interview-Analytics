@@ -21,7 +21,7 @@ export interface LoginPayload {
 export interface LoginResponseData {
   user: User;
   accessToken: string;
-  refreshToken: string;
+  refreshToken?: string;
 }
 
 /**
@@ -30,3 +30,26 @@ export interface LoginResponseData {
 export interface LoginResponse {
   data: LoginResponseData;
 }
+
+export interface RegisterPayload {
+  name: string;
+  email: string;
+  password: string;
+  roleName?: string;
+}
+
+export interface RegisterResponseData {
+  user: {
+    id: string;
+    name: string;
+    email: string;
+    role: string;
+    isActive: boolean;
+  };
+  accessToken: string;
+}
+
+export interface RegisterResponse {
+  data: RegisterResponseData;
+}
+

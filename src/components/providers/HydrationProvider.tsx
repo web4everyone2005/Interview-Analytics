@@ -14,19 +14,18 @@
 //   localStorage, sessionStorage, window, document, navigator...
 // ============================================================
 
-import { useEffect, useState } from "react";
+import { useSyncExternalStore } from "react";
 
 interface HydrationProviderProps {
   children: React.ReactNode;
 }
 
 export default function HydrationProvider({ children }: HydrationProviderProps) {
-  const [isMounted, setIsMounted] = useState(false);
-
-  useEffect(() => {
-    // useEffect chỉ chạy trên client → đảm bảo hydration hoàn tất
-    setIsMounted(true);
-  }, []);
+  const isMounted = useSyncExternalStore(
+    () => () => undefined,
+    () => true,
+    () => false
+  );
 
   // Trả về null để server và client đều render giống nhau ở lần đầu
   if (!isMounted) return null;

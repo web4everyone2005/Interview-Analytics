@@ -1,33 +1,43 @@
-// ============================================================
-// Tầng MODEL - Session
-// Mô phỏng kiểu dữ liệu Session mà BE gửi về / FE gửi lên
-// ============================================================
-
 export enum SessionStatus {
   SCHEDULED = "SCHEDULED",
+  ONGOING = "ONGOING",
   IN_PROGRESS = "IN_PROGRESS",
   COMPLETED = "COMPLETED",
   CANCELLED = "CANCELLED",
 }
 
 export interface SessionHR {
-  id: string;
+  _id?: string;
+  id?: string;
   name: string;
+  email: string;
+}
+
+export interface SessionJobPosition {
+  _id: string;
+  title: string;
+}
+
+export interface SessionCandidateProfile {
+  _id: string;
+  full_name: string;
   email: string;
 }
 
 export interface Session {
   id?: string;
   _id?: string;
-  conductor_id?: any;
-  job_position_id?: any;
-  candidate_profile_id?: any;
-  candidate_name?: string; // Tạm thời ánh xạ nếu cần thiết, thực tế từ populate
+  conductor_id?: string | SessionHR;
+  job_position_id?: string | SessionJobPosition | any;
+  candidate_profile_id?: string | SessionCandidateProfile | any;
+  title?: string;
+  hr_id?: SessionHR;
+  candidate_name?: string;
   candidate_email?: string;
+  questions?: any[];
+  status: SessionStatus | string;
   room_code: string;
   scheduled_at?: string;
-  status: SessionStatus | string;
-  questions?: any[]; // Chi tiết các câu hỏi trong phòng phỏng vấn
   createdAt: string;
   updatedAt: string;
 }
@@ -42,4 +52,14 @@ export interface CreateSessionPayload {
 export interface UpdateSessionPayload {
   status?: string;
   scheduled_at?: string;
+}
+
+export interface UpdateSessionStatusPayload {
+  status: SessionStatus | string;
+}
+
+export interface CreateSessionResponse {
+  message?: string;
+  data: Session;
+  magic_url?: string;
 }

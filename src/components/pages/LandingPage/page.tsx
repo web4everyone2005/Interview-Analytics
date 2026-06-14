@@ -1,7 +1,7 @@
 'use client';
 import { useState, useEffect } from "react";
 import Link from "next/link";
-import { Brain, Mic, FileText, ArrowRight, CheckCircle2, Play, Zap, BarChart2, Star } from "lucide-react";
+import { Brain, Mic, FileText, ArrowRight, CheckCircle2, Zap, BarChart2, Star } from "lucide-react";
 
 // interface LandingPageProps {
 //     onLogin: () => void;
@@ -416,7 +416,7 @@ export function LandingPage() {
                                         <Star key={j} className="w-4 h-4 fill-current" style={{ color: "#F59E0B" }} />
                                     ))}
                                 </div>
-                                <p style={{ fontSize: "14px", color: "var(--muted-foreground)", lineHeight: 1.7 }} className="mb-4">"{t.text}"</p>
+                                <p style={{ fontSize: "14px", color: "var(--muted-foreground)", lineHeight: 1.7 }} className="mb-4">&ldquo;{t.text}&rdquo;</p>
                                 <div className="flex items-center gap-3">
                                     <div className="w-8 h-8 rounded-full flex items-center justify-center font-bold text-sm"
                                         style={{ background: "linear-gradient(135deg,#4F75FF,#22D3EE)", color: "#fff" }}>
