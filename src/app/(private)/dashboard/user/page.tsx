@@ -10,7 +10,7 @@
 
 import { Plus } from "lucide-react";
 import { useMe } from "@/hooks/useUser";
-import SessionList from "@/components/pages/SessionList";
+import SessionList from "@/components/features/sessions/SessionList";
 
 export default function DashboardUserPage() {
   const { data: user, isLoading: userLoading } = useMe();

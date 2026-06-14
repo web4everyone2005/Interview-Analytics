@@ -35,3 +35,39 @@ export const useSessions = (swrConfig?: SWRConfiguration) => {
     mutate,
   };
 };
+
+export const useSessionDetail = (id: string | null, swrConfig?: SWRConfiguration) => {
+  const { data, error, isLoading, mutate } = useSWR<{ data: Session }>(
+    id ? `${SESSIONS_KEY}/${id}` : null,
+    async () => {
+      const { getSessionById } = await import("@/services/session.service");
+      return getSessionById(id!);
+    },
+    swrConfig
+  );
+
+  return {
+    session: data?.data,
+    isLoading,
+    error,
+    mutate,
+  };
+};
+
+export const useSessionByRoomCode = (roomCode: string | null, swrConfig?: SWRConfiguration) => {
+  const { data, error, isLoading, mutate } = useSWR<{ data: Session }>(
+    roomCode ? `${SESSIONS_KEY}/room/${roomCode}` : null,
+    async () => {
+      const { getSessionByRoomCode } = await import("@/services/session.service");
+      return getSessionByRoomCode(roomCode!);
+    },
+    swrConfig
+  );
+
+  return {
+    session: data?.data,
+    isLoading,
+    error,
+    mutate,
+  };
+};

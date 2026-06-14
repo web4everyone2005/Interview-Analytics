@@ -16,34 +16,30 @@ export interface SessionHR {
   email: string;
 }
 
-/**
- * Kiểu Session BE trả về (response).
- */
 export interface Session {
-  id: string;
-  title: string;
-  hr_id: SessionHR;
-  candidate_name: string;
-  candidate_email: string;
-  questions: string[]; // Danh sách ID câu hỏi
-  status: SessionStatus | string;
+  id?: string;
+  _id?: string;
+  conductor_id?: any;
+  job_position_id?: any;
+  candidate_profile_id?: any;
+  candidate_name?: string; // Tạm thời ánh xạ nếu cần thiết, thực tế từ populate
+  candidate_email?: string;
   room_code: string;
-  createdAt: string; // ISO 8601
-  updatedAt: string; // ISO 8601
+  scheduled_at?: string;
+  status: SessionStatus | string;
+  questions?: any[]; // Chi tiết các câu hỏi trong phòng phỏng vấn
+  createdAt: string;
+  updatedAt: string;
 }
 
-/**
- * Payload khi tạo phiên phỏng vấn mới (POST /sessions).
- */
 export interface CreateSessionPayload {
-  title: string;
-  candidate_name: string;
-  candidate_email: string;
-  questions?: string[];
-  status?: SessionStatus | string;
+  job_position_id: string;
+  candidate_profile_id: string;
+  question_bank_ids?: string[];
+  scheduled_at?: string;
 }
 
-/**
- * Payload khi cập nhật phiên phỏng vấn (PUT /sessions/:id).
- */
-export type UpdateSessionPayload = Partial<CreateSessionPayload>;
+export interface UpdateSessionPayload {
+  status?: string;
+  scheduled_at?: string;
+}
