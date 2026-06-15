@@ -13,6 +13,7 @@ export const uploadRecording = async (
 ): Promise<ApiResponse<any>> => {
   const formData = new FormData();
   formData.append("session_id", payload.session_id);
+  formData.append("session_question_id", payload.question_id);
   formData.append("question_id", payload.question_id);
   formData.append("user_role", payload.speaker_role);
   // append the audio file with a dummy filename, as the BE uses multer
