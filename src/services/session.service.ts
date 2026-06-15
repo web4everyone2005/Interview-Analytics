@@ -63,6 +63,17 @@ export const updateSessionStatus = async (
   return data;
 };
 
+export const createFollowUpQuestion = async (
+  sessionId: string,
+  payload: { content: string; expected_answer: string }
+): Promise<ApiResponse<any>> => {
+  const { data } = await axiosInstance.post<ApiResponse<any>>(
+    `/sessions/${sessionId}/follow-up-question`,
+    payload
+  );
+  return data;
+};
+
 export const sendSessionInvitation = async (
   id: string
 ): Promise<ApiResponse<null>> => {

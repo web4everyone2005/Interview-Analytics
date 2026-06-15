@@ -12,7 +12,7 @@ function JoinInterviewContent() {
   useEffect(() => {
     const token = searchParams.get("token");
     if (!token) {
-      setError("Thiếu tham số token trong URL.");
+      setTimeout(() => setError("Thiếu tham số token trong URL."), 0);
       return;
     }
 

@@ -124,7 +124,7 @@ export function CandidatePanel({
               <button
                 key={candidate._id}
                 type="button"
-                onClick={() => onSelectCandidate(candidate._id)}
+                onClick={() => onSelectCandidate(candidate._id!)}
                 className={`flex w-full items-start gap-3 border-b border-white/6 px-3 py-2 text-left last:border-0 ${
                   selectedCandidateId === candidate._id
                     ? "bg-blue-500/10"

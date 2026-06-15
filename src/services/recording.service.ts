@@ -14,19 +14,14 @@ export const uploadRecording = async (
   const formData = new FormData();
   formData.append("session_id", payload.session_id);
   formData.append("question_id", payload.question_id);
-  formData.append("speaker_role", payload.speaker_role);
+  formData.append("user_role", payload.speaker_role);
   // append the audio file with a dummy filename, as the BE uses multer
-  formData.append("audio_file", payload.audio_blob, `audio_${payload.speaker_role}_${Date.now()}.webm`);
+  formData.append("audio", payload.audio_blob, `audio_${payload.speaker_role}_${Date.now()}.webm`);
 
-  // Phải config headers là multipart/form-data
+  // Không set Content-Type thủ công để Axios tự sinh boundary
   const { data } = await axiosInstance.post<ApiResponse<any>>(
-    "/api/v1/recordings/upload",
-    formData,
-    {
-      headers: {
-        "Content-Type": "multipart/form-data",
-      },
-    }
+    "/recordings/upload",
+    formData
   );
   return data;
 };

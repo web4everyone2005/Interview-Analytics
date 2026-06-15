@@ -4,8 +4,8 @@ import React, { useState, useEffect } from "react";
 import { useSessionByRoomCode } from "@/hooks/useSession";
 import { useInterviewSocket } from "@/hooks/useInterviewSocket";
 import { useAudioRecording } from "@/hooks/useAudioRecording";
-import { Mic, Square, ArrowRight, ArrowLeft } from "lucide-react";
-import { updateSessionStatus } from "@/services/session.service";
+import { Mic, Square, ArrowRight, ArrowLeft, Plus } from "lucide-react";
+import { updateSessionStatus, createFollowUpQuestion } from "@/services/session.service";
 
 interface HRRoomProps {
   roomCode: string;
@@ -19,6 +19,31 @@ export default function HRRoom({ roomCode }: HRRoomProps) {
   const currentQuestion = questions[currentQuestionIndex];
   
   const sessionId = session?._id || session?.id || "";
+
+  const [isAddingFollowUp, setIsAddingFollowUp] = useState(false);
+  const [followUpContent, setFollowUpContent] = useState("");
+  const [followUpExpected, setFollowUpExpected] = useState("");
+  const [isSubmittingFollowUp, setIsSubmittingFollowUp] = useState(false);
+
+  const handleAddFollowUp = async () => {
+    if (!followUpContent || !followUpExpected) return;
+    setIsSubmittingFollowUp(true);
+    try {
+      await createFollowUpQuestion(sessionId, {
+        content: followUpContent,
+        expected_answer: followUpExpected
+      });
+      alert("Đã thêm câu hỏi Follow-up thành công!");
+      setFollowUpContent("");
+      setFollowUpExpected("");
+      setIsAddingFollowUp(false);
+      mutate(); // Reload questions list
+    } catch (err: any) {
+      alert(err.response?.data?.message || "Lỗi khi thêm câu hỏi");
+    } finally {
+      setIsSubmittingFollowUp(false);
+    }
+  };
 
   // HR cũng ghi âm song song (Dual-track audio)
   const { startRecording, stopRecordingAndUpload, isRecording } = useAudioRecording(
@@ -92,8 +117,10 @@ export default function HRRoom({ roomCode }: HRRoomProps) {
           {questions.map((q, idx) => (
             <div 
               key={q._id} 
-              className={`p-3 border rounded cursor-pointer transition ${currentQuestionIndex === idx ? "border-blue-500 bg-blue-50" : "hover:bg-gray-50"}`}
-              onClick={() => setCurrentQuestionIndex(idx)}
+              className={`p-3 border rounded ${isRecording ? "opacity-50 cursor-not-allowed" : "cursor-pointer hover:bg-gray-50"} transition ${currentQuestionIndex === idx ? "border-blue-500 bg-blue-50" : ""}`}
+              onClick={() => {
+                if (!isRecording) setCurrentQuestionIndex(idx);
+              }}
             >
               <div className="text-xs font-semibold text-gray-500 mb-1">Câu {idx + 1}</div>
               <div className="text-sm">{q.content}</div>
@@ -116,7 +143,7 @@ export default function HRRoom({ roomCode }: HRRoomProps) {
             </div>
             <button 
               onClick={handleEndSession}
-              disabled={session.status === "COMPLETED"}
+              disabled={session.status === "COMPLETED" || isRecording}
               className="px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700 disabled:opacity-50"
             >
               Kết thúc Phỏng vấn
@@ -155,18 +182,61 @@ export default function HRRoom({ roomCode }: HRRoomProps) {
               <div className="flex justify-between items-center border-t pt-6">
                 <button 
                   onClick={handlePrevQuestion}
-                  disabled={currentQuestionIndex === 0}
+                  disabled={currentQuestionIndex === 0 || isRecording}
                   className="flex items-center gap-1 text-gray-600 hover:text-blue-600 disabled:opacity-30"
                 >
                   <ArrowLeft size={18} /> Câu trước
                 </button>
                 <button 
                   onClick={handleNextQuestion}
-                  disabled={currentQuestionIndex === questions.length - 1}
+                  disabled={currentQuestionIndex === questions.length - 1 || isRecording}
                   className="flex items-center gap-1 text-gray-600 hover:text-blue-600 disabled:opacity-30"
                 >
                   Câu tiếp <ArrowRight size={18} />
                 </button>
+              </div>
+
+              {/* Add Follow-up Question UI */}
+              <div className="mt-8 border-t pt-6 text-left">
+                <button 
+                  onClick={() => setIsAddingFollowUp(!isAddingFollowUp)}
+                  className="flex items-center gap-2 text-sm font-medium text-blue-600 hover:text-blue-700"
+                >
+                  <Plus size={16} /> Thêm câu hỏi Ad-hoc (Follow-up)
+                </button>
+                
+                {isAddingFollowUp && (
+                  <div className="mt-4 space-y-3 bg-gray-50 p-4 rounded-lg border">
+                    <input 
+                      type="text"
+                      placeholder="Nội dung câu hỏi Follow-up..."
+                      className="w-full border rounded px-3 py-2 text-sm focus:outline-blue-500"
+                      value={followUpContent}
+                      onChange={(e) => setFollowUpContent(e.target.value)}
+                    />
+                    <textarea 
+                      placeholder="Đáp án kỳ vọng (Dành cho AI chấm)..."
+                      className="w-full border rounded px-3 py-2 text-sm focus:outline-blue-500"
+                      value={followUpExpected}
+                      onChange={(e) => setFollowUpExpected(e.target.value)}
+                    />
+                    <div className="flex justify-end gap-2">
+                      <button 
+                        onClick={() => setIsAddingFollowUp(false)}
+                        className="px-3 py-1.5 text-sm text-gray-600 hover:bg-gray-200 rounded"
+                      >
+                        Hủy
+                      </button>
+                      <button 
+                        onClick={handleAddFollowUp}
+                        disabled={isSubmittingFollowUp || !followUpContent || !followUpExpected}
+                        className="px-3 py-1.5 text-sm bg-blue-600 text-white hover:bg-blue-700 rounded disabled:opacity-50"
+                      >
+                        {isSubmittingFollowUp ? "Đang lưu..." : "Lưu câu hỏi"}
+                      </button>
+                    </div>
+                  </div>
+                )}
               </div>
             </div>
           ) : (

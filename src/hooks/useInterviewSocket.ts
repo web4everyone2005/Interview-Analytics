@@ -24,10 +24,31 @@ export const useInterviewSocket = ({
   const socketRef = useRef<Socket | null>(null);
   const [isConnected, setIsConnected] = useState(false);
 
+  // Use refs for callbacks to prevent socket reconnection loop on re-renders
+  const callbacksRef = useRef({
+    onRecordingStarted,
+    onRecordingStopped,
+    onQuestionChanged,
+    onUserJoined,
+    onUserLeft,
+    onError,
+  });
+
+  useEffect(() => {
+    callbacksRef.current = {
+      onRecordingStarted,
+      onRecordingStopped,
+      onQuestionChanged,
+      onUserJoined,
+      onUserLeft,
+      onError,
+    };
+  });
+
   useEffect(() => {
     const token = tokenStorage.getAccessToken();
     if (!token) {
-      if (onError) onError({ message: "No token found" });
+      if (callbacksRef.current.onError) callbacksRef.current.onError({ message: "No token found" });
       return;
     }
 
@@ -50,34 +71,34 @@ export const useInterviewSocket = ({
     });
 
     socket.on("room:error", (err) => {
-      if (onError) onError(err);
+      if (callbacksRef.current.onError) callbacksRef.current.onError(err);
     });
 
     socket.on("recording:started", (data) => {
-      if (onRecordingStarted) onRecordingStarted(data);
+      if (callbacksRef.current.onRecordingStarted) callbacksRef.current.onRecordingStarted(data);
     });
 
     socket.on("recording:stopped", (data) => {
-      if (onRecordingStopped) onRecordingStopped(data);
+      if (callbacksRef.current.onRecordingStopped) callbacksRef.current.onRecordingStopped(data);
     });
 
     socket.on("question:changed", (data) => {
-      if (onQuestionChanged) onQuestionChanged(data);
+      if (callbacksRef.current.onQuestionChanged) callbacksRef.current.onQuestionChanged(data);
     });
 
     socket.on("room:user-joined", (data) => {
-      if (onUserJoined) onUserJoined(data);
+      if (callbacksRef.current.onUserJoined) callbacksRef.current.onUserJoined(data);
     });
 
     socket.on("room:user-left", (data) => {
-      if (onUserLeft) onUserLeft(data);
+      if (callbacksRef.current.onUserLeft) callbacksRef.current.onUserLeft(data);
     });
 
     return () => {
       socket.emit("room:leave", { roomCode });
       socket.disconnect();
     };
-  }, [roomCode, onRecordingStarted, onRecordingStopped, onQuestionChanged, onUserJoined, onUserLeft, onError]);
+  }, [roomCode]);
 
   const emitStartRecording = (questionId: string) => {
     socketRef.current?.emit("recording:start", { roomCode, questionId });
@@ -92,7 +113,7 @@ export const useInterviewSocket = ({
   };
 
   return {
-    socket: socketRef.current,
+    getSocket: () => socketRef.current,
     isConnected,
     emitStartRecording,
     emitStopRecording,

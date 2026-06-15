@@ -35,27 +35,35 @@ export const useAudioRecording = (
     async (questionId: string) => {
       if (!mediaRecorderRef.current) return;
 
-      mediaRecorderRef.current.stop();
-      setIsRecording(false);
-      
-      // Dừng tất cả track của stream để nhả Microphone
-      mediaRecorderRef.current.stream.getTracks().forEach(track => track.stop());
+      return new Promise<void>((resolve) => {
+        const recorder = mediaRecorderRef.current!;
+        
+        recorder.onstop = async () => {
+          setIsRecording(false);
+          
+          // Nhả Microphone
+          recorder.stream.getTracks().forEach(track => track.stop());
 
-      // Lấy Blob từ các chunk
-      const audioBlob = new Blob(audioChunksRef.current, { type: "audio/webm" });
-      audioChunksRef.current = [];
+          // Lấy Blob từ các chunk SAU KHI event dataavailable cuối cùng đã fired
+          const audioBlob = new Blob(audioChunksRef.current, { type: "audio/webm" });
+          audioChunksRef.current = [];
 
-      try {
-        await uploadRecording({
-          session_id: sessionId,
-          question_id: questionId,
-          speaker_role: speakerRole,
-          audio_blob: audioBlob,
-        });
-        console.log(`Đã upload audio cho câu hỏi ${questionId}`);
-      } catch (err) {
-        console.error("Lỗi upload audio:", err);
-      }
+          try {
+            await uploadRecording({
+              session_id: sessionId,
+              question_id: questionId,
+              speaker_role: speakerRole,
+              audio_blob: audioBlob,
+            });
+            console.log(`Đã upload audio cho câu hỏi ${questionId}`);
+          } catch (err) {
+            console.error("Lỗi upload audio:", err);
+          }
+          resolve();
+        };
+
+        recorder.stop();
+      });
     },
     [sessionId, speakerRole]
   );
