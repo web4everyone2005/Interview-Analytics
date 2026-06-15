@@ -48,9 +48,13 @@ export function KnowledgeUploadPanel({
 
   const submitUpload = async () => {
     if (!file || !selectedJobId) return;
+    // Nếu không nhập title, tự lấy tên file (bỏ extension) làm title
+    // để tránh BE tự đặt tên bằng tên file gốc và bị lỗi encoding tiếng Việt
+    const autoTitle =
+      title.trim() || file.name.replace(/\.[^/.]+$/, "");
     await onUpload({
       file,
-      title: title.trim() || undefined,
+      title: autoTitle,
       job_position_id: selectedJobId,
     });
     setFile(null);
@@ -139,7 +143,7 @@ export function KnowledgeUploadPanel({
                 />
                 <div className="min-w-0">
                   <p className="truncate text-sm font-medium text-white">
-                    {document.title}
+                    {document.title || document.file_name || "Untitled document"}
                   </p>
                   <p className="truncate text-xs text-white/35">
                     {document.is_processed ? "Processed" : "Processing"}

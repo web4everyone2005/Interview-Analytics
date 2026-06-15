@@ -147,7 +147,14 @@ export const useKnowledgeDocuments = (swrConfig?: SWRConfiguration) => {
   const { data, error, isLoading, mutate } = useSWR(
     SETUP_KEYS.knowledge,
     getKnowledgeDocuments,
-    swrConfig
+    {
+      // Poll mỗi 3s khi BE còn đang xử lý document, tự dừng khi xong hết
+      refreshInterval: (latestData) => {
+        const docs = latestData?.data ?? [];
+        return docs.some((doc) => !doc.is_processed) ? 3000 : 0;
+      },
+      ...swrConfig,
+    }
   );
 
   return { documents: data?.data ?? [], error, isLoading, mutate };
