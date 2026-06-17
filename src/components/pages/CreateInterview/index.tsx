@@ -232,10 +232,12 @@ export default function CreateInterview() {
   const handleDeleteKnowledge = async (id: string) => {
     try {
       await deleteKnowledgeMutation.trigger({ id });
-      await mutateDocuments();
       showSuccess("Knowledge document deleted.");
     } catch (error) {
       showError(error);
+    } finally {
+      // Luôn refresh danh sách để dọn sạch document "ma" khỏi UI
+      await mutateDocuments();
     }
   };
 
