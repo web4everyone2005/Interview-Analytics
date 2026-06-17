@@ -36,3 +36,12 @@ export const getKnowledgeDocumentsByJob = async (
   );
   return data;
 };
+
+export const deleteKnowledgeDocument = async (
+  id: string
+): Promise<ApiResponse<void>> => {
+  const { data } = await axiosInstance.delete<ApiResponse<void>>(
+    `/knowledge/${id}`
+  );
+  return data;
+};

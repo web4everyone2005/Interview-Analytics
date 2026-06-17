@@ -9,6 +9,7 @@ import {
 import {
   getKnowledgeDocuments,
   uploadKnowledgeDocument,
+  deleteKnowledgeDocument,
 } from "@/services/knowledge.service";
 import {
   createQuestion,
@@ -167,6 +168,12 @@ export const useUploadKnowledgeDocument = () =>
       _key: string,
       { arg }: { arg: { file: File; title?: string; job_position_id: string } }
     ) => uploadKnowledgeDocument(arg)
+  );
+
+export const useDeleteKnowledgeDocument = () =>
+  useSWRMutation(
+    `${SETUP_KEYS.knowledge}/delete`,
+    (_key: string, { arg }: { arg: { id: string } }) => deleteKnowledgeDocument(arg.id)
   );
 
 export const useCreateSession = () =>

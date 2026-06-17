@@ -19,7 +19,7 @@ import { NextRequest, NextResponse } from "next/server";
 
 // ─── Cấu hình routes ──────────────────────────────────────────
 const PUBLIC_ROUTES = ["/login", "/register"];
-const AUTH_REDIRECT_WHEN_LOGGED_IN = "/dashboard"; // Trang mặc định sau khi đăng nhập
+const AUTH_REDIRECT_WHEN_LOGGED_IN = "/dashboard/user"; // Trang mặc định sau khi đăng nhập
 const LOGIN_PAGE = "/login";
 const COOKIE_NAME = "access_token";
 
@@ -48,6 +48,11 @@ export function proxy(request: NextRequest): NextResponse {
   // Bỏ qua static assets để tránh overhead không cần thiết
   if (isStaticAsset(pathname)) {
     return NextResponse.next();
+  }
+
+  // Nếu truy cập đúng "/dashboard" hoặc "/dashboard/" thì redirect về "/dashboard/user" để tránh 404
+  if (pathname === "/dashboard" || pathname === "/dashboard/") {
+    return NextResponse.redirect(new URL("/dashboard/user", request.url));
   }
 
   const accessToken = request.cookies.get(COOKIE_NAME)?.value;

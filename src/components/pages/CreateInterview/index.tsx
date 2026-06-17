@@ -15,6 +15,7 @@ import {
   useImportQuestions,
   useJobPositions,
   useKnowledgeDocuments,
+  useDeleteKnowledgeDocument,
   useQuestions,
   useSendSessionInvitation,
   useSkills,
@@ -77,6 +78,7 @@ export default function CreateInterview() {
   const createQuestionMutation = useCreateQuestion();
   const importQuestionsMutation = useImportQuestions();
   const uploadKnowledgeMutation = useUploadKnowledgeDocument();
+  const deleteKnowledgeMutation = useDeleteKnowledgeDocument();
   const createSessionMutation = useCreateSession();
   const sendInvitationMutation = useSendSessionInvitation(
     createdSession?.session.id ?? null
@@ -227,6 +229,16 @@ export default function CreateInterview() {
     }
   };
 
+  const handleDeleteKnowledge = async (id: string) => {
+    try {
+      await deleteKnowledgeMutation.trigger({ id });
+      await mutateDocuments();
+      showSuccess("Knowledge document deleted.");
+    } catch (error) {
+      showError(error);
+    }
+  };
+
   const toggleQuestion = (id: string) => {
     setSelectedQuestionIds((current) =>
       current.includes(id)
@@ -372,6 +384,7 @@ export default function CreateInterview() {
           locked={knowledgeLocked}
           lockedMessage="Select at least one question before uploading the knowledge base."
           onUpload={handleUploadKnowledge}
+          onDelete={handleDeleteKnowledge}
           isUploading={uploadKnowledgeMutation.isMutating}
         />
 

@@ -1,5 +1,5 @@
 import { ChangeEvent, useState } from "react";
-import { FileCheck2, FileUp } from "lucide-react";
+import { FileCheck2, FileUp, Trash2 } from "lucide-react";
 import { JobPosition } from "@/models/job-position.model";
 import { KnowledgeDocument } from "@/models/knowledge.model";
 import {
@@ -21,6 +21,7 @@ interface KnowledgeUploadPanelProps {
     title?: string;
     job_position_id: string;
   }) => Promise<void>;
+  onDelete?: (id: string) => Promise<void>;
   isUploading: boolean;
 }
 
@@ -31,6 +32,7 @@ export function KnowledgeUploadPanel({
   locked,
   lockedMessage,
   onUpload,
+  onDelete,
   isUploading,
 }: KnowledgeUploadPanelProps) {
   const [title, setTitle] = useState("");
@@ -133,22 +135,34 @@ export function KnowledgeUploadPanel({
             {selectedDocuments.map((document) => (
               <div
                 key={document.id}
-                className="flex items-start gap-3 border-b border-white/6 px-3 py-2 last:border-0"
+                className="flex items-center justify-between gap-3 border-b border-white/6 px-3 py-2 last:border-0"
               >
-                <FileCheck2
-                  size={16}
-                  className={
-                    document.is_processed ? "text-emerald-300" : "text-amber-300"
-                  }
-                />
-                <div className="min-w-0">
-                  <p className="truncate text-sm font-medium text-white">
-                    {document.title || document.file_name || "Untitled document"}
-                  </p>
-                  <p className="truncate text-xs text-white/35">
-                    {document.is_processed ? "Processed" : "Processing"}
-                  </p>
+                <div className="flex items-start gap-3 min-w-0 flex-1">
+                  <FileCheck2
+                    size={16}
+                    className={
+                      document.is_processed ? "text-emerald-300" : "text-amber-300"
+                    }
+                  />
+                  <div className="min-w-0 flex-1">
+                    <p className="truncate text-sm font-medium text-white">
+                      {document.title || document.file_name || "Untitled document"}
+                    </p>
+                    <p className="truncate text-xs text-white/35">
+                      {document.is_processed ? "Processed" : "Processing"}
+                    </p>
+                  </div>
                 </div>
+                {onDelete && (
+                  <button
+                    type="button"
+                    onClick={() => document.id && onDelete(document.id)}
+                    className="text-white/30 hover:text-red-400 transition-colors p-1"
+                    title="Delete document"
+                  >
+                    <Trash2 size={14} />
+                  </button>
+                )}
               </div>
             ))}
           </div>
