@@ -2,14 +2,31 @@ import { useEffect, useRef, useState } from "react";
 import { io, Socket } from "socket.io-client";
 import { tokenStorage } from "@/lib/axios";
 
+interface SocketRecordingData {
+    questionId: string;
+    [key: string]: unknown;
+}
+
+interface SocketUserData {
+    userId: string;
+    name?: string;
+    email?: string;
+    role?: "HR" | "CANDIDATE";
+}
+
+interface SocketErrorData {
+    message: string;
+    status?: number;
+}
+
 interface UseInterviewSocketProps {
     roomCode: string;
-    onRecordingStarted?: (data: any) => void;
-    onRecordingStopped?: (data: any) => void;
+    onRecordingStarted?: (data: SocketRecordingData) => void;
+    onRecordingStopped?: (data: SocketRecordingData) => void;
     onQuestionChanged?: (data: { questionIndex: number }) => void;
-    onUserJoined?: (data: any) => void;
-    onUserLeft?: (data: any) => void;
-    onError?: (error: any) => void;
+    onUserJoined?: (data: SocketUserData) => void;
+    onUserLeft?: (data: SocketUserData) => void;
+    onError?: (error: SocketErrorData) => void;
 }
 
 export const useInterviewSocket = ({
@@ -46,11 +63,9 @@ export const useInterviewSocket = ({
     });
 
     useEffect(() => {
-       
         const searchParams = new URLSearchParams(window.location.search);
         const magicToken = searchParams.get("token");
 
-      
         const token = magicToken || tokenStorage.getAccessToken();
 
         if (!token) {
@@ -62,10 +77,8 @@ export const useInterviewSocket = ({
 
         const socketUrl = process.env.NEXT_PUBLIC_SOCKET_URL || "http://localhost:3001";
 
-        
         const socket = io(socketUrl, {
             auth: { token },
-            
             query: { token },
             transports: ["websocket", "polling"],
         });
@@ -123,11 +136,17 @@ export const useInterviewSocket = ({
         socketRef.current?.emit("question:next", { roomCode, questionIndex });
     };
 
+    // ADDED: Hàm giúp Candidate truyền luồng âm thanh realtime (Buffer chunk) lên server
+    const emitAudioStream = (audioChunk: Blob | Buffer, questionId: string) => {
+        socketRef.current?.emit("audio:stream", { roomCode, audioChunk, questionId });
+    };
+
     return {
         getSocket: () => socketRef.current,
         isConnected,
         emitStartRecording,
         emitStopRecording,
         emitNextQuestion,
+        emitAudioStream, // Export hàm này ra ngoài
     };
 };
