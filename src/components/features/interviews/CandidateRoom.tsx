@@ -38,12 +38,21 @@ export default function CandidateRoom({ roomCode }: CandidateRoomProps) {
             setCurrentQuestionId(data.questionId);
             startRecording();
         },
-        onRecordingStopped: (data) => {
+        onRecordingStopped: async (data) => { // 1. Thêm async ở đây
             console.log("HR stopped recording", data);
-            // FIX 1: Dùng currentQuestionId từ state thay vì data.questionId (đề phòng data trả về trống)
-            if (currentQuestionId) {
-                stopRecordingAndUpload(currentQuestionId);
+
+            // 2. Ưu tiên lấy questionId từ socket gửi về (nếu có), nếu không có mới fallback về state
+            const activeQuestionId = data?.questionId || currentQuestionId;
+
+            if (activeQuestionId) {
+                console.log(`[UPLOAD] Kích hoạt upload file cho câu hỏi: ${activeQuestionId}`);
+                // 3. Thêm await để đảm bảo upload xong xuôi
+                await stopRecordingAndUpload(activeQuestionId);
+            } else {
+                console.warn("[UPLOAD] Không tìm thấy questionId hợp lệ để upload.");
             }
+
+            // 4. Upload xong hoàn toàn mới xóa state câu hỏi hiện tại
             setCurrentQuestionId(null);
         },
         onError: (err) => {
