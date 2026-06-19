@@ -8,6 +8,16 @@ export interface UploadRecordingPayload {
     audio_blob: Blob;
     token?: string;
 }
+export const tokenStorage = {
+    getAccessToken: (): string | null => {
+        if (typeof window === "undefined") return null;
+        return localStorage.getItem("access_token");
+    },
+    getRefreshToken: (): string | null => {
+        if (typeof window === "undefined") return null;
+        return localStorage.getItem("refresh_token");
+    }
+};
 
 export const uploadRecording = async (
     payload: UploadRecordingPayload
