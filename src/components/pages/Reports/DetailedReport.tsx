@@ -49,8 +49,9 @@ export default function DetailedReport({ sessionId }: { sessionId: string }) {
       await triggerReEvaluate(sessionId);
       alert("Đã gửi yêu cầu chấm lại thành công. Vui lòng quay lại sau ít phút.");
       mutate();
-    } catch (error) {
-      alert("Lỗi khi gửi yêu cầu chấm lại.");
+    } catch (error: any) {
+      const msg = error.response?.data?.message || "Lỗi khi gửi yêu cầu chấm lại.";
+      alert(msg);
     } finally {
       setIsReevaluating(false);
     }

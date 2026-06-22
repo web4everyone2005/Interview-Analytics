@@ -7,12 +7,14 @@ import { useAudioRecording } from "@/hooks/useAudioRecording";
 import { Mic, Square, ArrowRight, ArrowLeft, Plus } from "lucide-react";
 import { updateSessionStatus, createFollowUpQuestion } from "@/services/session.service";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 
 interface HRRoomProps {
   roomCode: string;
 }
 
 export default function HRRoom({ roomCode }: HRRoomProps) {
+  const router = useRouter();
   const { session, isLoading, error, mutate } = useSessionByRoomCode(roomCode);
   
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
@@ -97,7 +99,7 @@ export default function HRRoom({ roomCode }: HRRoomProps) {
     try {
       await updateSessionStatus(sessionId, "COMPLETED");
       alert("Đã kết thúc! Vui lòng chờ AI chấm điểm (Phase 3).");
-      mutate();
+      router.push("/dashboard/sessions");
     } catch (err) {
       alert("Lỗi khi kết thúc phỏng vấn");
     }

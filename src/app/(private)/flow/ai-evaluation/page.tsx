@@ -126,14 +126,15 @@ export default function AIEvaluationPage() {
     (r) => r.metrics?.average_score >= 8
   ).length;
 
-  /* actions */
   const handleReEvaluate = async (sessionId: string) => {
     try {
       setReEvalLoading(sessionId);
       await triggerReEvaluate(sessionId);
+      alert("Đã gửi yêu cầu đánh giá lại thành công. Vui lòng quay lại sau ít phút.");
       await mutate();
-    } catch {
-      // error handled by axios interceptor
+    } catch (error: any) {
+      const msg = error.response?.data?.message || "Lỗi khi gửi yêu cầu đánh giá lại.";
+      alert(msg);
     } finally {
       setReEvalLoading(null);
     }
