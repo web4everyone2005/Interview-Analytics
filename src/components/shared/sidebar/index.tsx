@@ -57,7 +57,7 @@ const mainMenuItems: NavItem[] = [
   },
   {
     label: "Phòng phỏng vấn",
-    href: "/interviews/room",
+    href: "/dashboard/sessions",
     icon: <Video size={16} />,
   },
   {
