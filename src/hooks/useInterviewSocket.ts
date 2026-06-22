@@ -75,7 +75,17 @@ export const useInterviewSocket = ({
             return;
         }
 
-        const socketUrl = process.env.NEXT_PUBLIC_SOCKET_URL || "http://localhost:3001";
+        // Tự động phân tích socketUrl từ API Base URL nếu không có NEXT_PUBLIC_SOCKET_URL cấu hình
+        let socketUrl = process.env.NEXT_PUBLIC_SOCKET_URL;
+        if (!socketUrl) {
+            const apiBaseUrl = process.env.NEXT_PUBLIC_API_BASE_URL || "";
+            if (apiBaseUrl) {
+                // Loại bỏ đuôi /api/v1 hoặc /api để lấy domain gốc
+                socketUrl = apiBaseUrl.replace(/\/api\/v1\/?$/, "").replace(/\/api\/?$/, "");
+            } else {
+                socketUrl = "http://localhost:5000"; // Fallback về cổng 5000 của BE
+            }
+        }
 
         const socket = io(socketUrl, {
             auth: { token },
