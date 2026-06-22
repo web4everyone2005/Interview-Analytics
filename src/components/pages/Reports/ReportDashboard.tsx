@@ -179,10 +179,16 @@ export default function ReportDashboard() {
                       className={`text-xs px-2 py-0.5 rounded-full font-medium ${
                         report.metrics?.evaluated_questions > 0
                           ? "bg-green-500/20 text-green-400"
+                          : report.status === "COMPLETED"
+                          ? "bg-red-500/20 text-red-400"
                           : "bg-yellow-500/20 text-yellow-400"
                       }`}
                     >
-                      {report.metrics?.evaluated_questions > 0 ? `${report.metrics?.average_score}/10` : "Pending"}
+                      {report.metrics?.evaluated_questions > 0 
+                        ? `${report.metrics?.average_score}/10` 
+                        : report.status === "COMPLETED"
+                        ? "0/10" 
+                        : "Pending"}
                     </span>
                   </div>
                   <div className="flex items-center justify-between text-xs text-white/40">

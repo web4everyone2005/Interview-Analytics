@@ -150,6 +150,11 @@ export default function DetailedReport({ sessionId }: { sessionId: string }) {
                     <span className="text-xl font-bold text-blue-400">{detail.evaluation.score}</span>
                     <span className="text-[10px] text-white/40 font-medium">ĐIỂM</span>
                   </div>
+                ) : session_info.status === "COMPLETED" ? (
+                  <div className="shrink-0 w-16 h-16 rounded-xl border border-red-500/20 bg-red-500/10 flex flex-col items-center justify-center">
+                    <span className="text-xl font-bold text-red-400">0</span>
+                    <span className="text-[10px] text-white/40 font-medium">ĐIỂM</span>
+                  </div>
                 ) : (
                   <div className="shrink-0 px-3 py-1.5 rounded-lg border border-yellow-500/20 bg-yellow-500/10 text-yellow-400 text-xs font-medium">
                     Chưa chấm
@@ -180,7 +185,7 @@ export default function DetailedReport({ sessionId }: { sessionId: string }) {
                 </div>
 
                 {/* Right: AI Evaluation */}
-                {detail.evaluation && (
+                {detail.evaluation ? (
                   <div className="flex-1 space-y-4 md:border-l md:border-white/10 md:pl-6">
                     <div>
                       <h4 className="text-xs font-semibold text-white/30 uppercase tracking-widest mb-2">Nhận xét của AI</h4>
@@ -225,7 +230,13 @@ export default function DetailedReport({ sessionId }: { sessionId: string }) {
                       )}
                     </div>
                   </div>
-                )}
+                ) : session_info.status === "COMPLETED" ? (
+                  <div className="flex-1 space-y-4 md:border-l md:border-white/10 md:pl-6 flex flex-col justify-center min-h-[150px]">
+                    <p className="text-sm text-white/40 italic text-center">
+                      Không có câu trả lời ghi âm. AI không thể đánh giá.
+                    </p>
+                  </div>
+                ) : null}
               </div>
             </div>
           ))
