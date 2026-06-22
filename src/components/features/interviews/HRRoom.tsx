@@ -6,6 +6,7 @@ import { useInterviewSocket } from "@/hooks/useInterviewSocket";
 import { useAudioRecording } from "@/hooks/useAudioRecording";
 import { Mic, Square, ArrowRight, ArrowLeft, Plus } from "lucide-react";
 import { updateSessionStatus, createFollowUpQuestion } from "@/services/session.service";
+import Link from "next/link";
 
 interface HRRoomProps {
   roomCode: string;
@@ -132,9 +133,18 @@ export default function HRRoom({ roomCode }: HRRoomProps) {
       {/* Main Panel: Điều khiển ghi âm & Hiện tại */}
       <main className="flex-1 flex flex-col">
         <header className="bg-white p-4 shadow-sm flex justify-between items-center">
-          <div>
-            <h1 className="text-xl font-bold">HR Control Room: {roomCode}</h1>
-            <p className="text-sm text-gray-600">Ứng viên: {session.candidate_profile_id?.full_name || "N/A"}</p>
+          <div className="flex items-center gap-4">
+            <Link 
+              href="/dashboard/sessions" 
+              className="p-2 hover:bg-gray-100 rounded-lg transition text-gray-600 hover:text-gray-900"
+              title="Quay lại danh sách"
+            >
+              <ArrowLeft size={20} />
+            </Link>
+            <div>
+              <h1 className="text-xl font-bold">HR Control Room: {roomCode}</h1>
+              <p className="text-sm text-gray-600">Ứng viên: {session.candidate_profile_id?.full_name || "N/A"}</p>
+            </div>
           </div>
           <div className="flex items-center gap-4">
             <div className="flex items-center gap-1 text-sm font-medium">

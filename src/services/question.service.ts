@@ -66,6 +66,9 @@ export const importQuestionsFromPdf = async (payload: {
         {
             file: payload.file,
             category_id: payload.category_id,
+        },
+        {
+            timeout: 60000, // Tăng timeout lên 60 giây vì phân tích PDF bằng AI cần nhiều thời gian
         }
     );
     return data;

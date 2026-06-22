@@ -23,7 +23,9 @@ export const uploadRecording = async (
     // append the audio file with a dummy filename, as the BE uses multer
     formData.append("audio", payload.audio_blob, `audio_${payload.user_role}_${Date.now()}.webm`);
 
-    const config: AxiosRequestConfig = {};
+    const config: AxiosRequestConfig = {
+        timeout: 30000 // 30s timeout cho upload audio
+    };
 
     if (payload.token) {
         config.headers = {
