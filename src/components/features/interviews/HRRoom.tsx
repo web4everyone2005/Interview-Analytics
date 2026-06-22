@@ -59,7 +59,7 @@ export default function HRRoom({ roomCode }: HRRoomProps) {
 
   const handleStartRecording = () => {
     if (!currentQuestion) return;
-    const qId = currentQuestion._id;
+    const qId = currentQuestion.id || currentQuestion._id;
     // Báo cho Candidate bật Mic
     emitStartRecording(qId);
     // Bật Mic của HR luôn
@@ -68,7 +68,7 @@ export default function HRRoom({ roomCode }: HRRoomProps) {
 
   const handleStopRecording = () => {
     if (!currentQuestion) return;
-    const qId = currentQuestion._id;
+    const qId = currentQuestion.id || currentQuestion._id;
     // Báo cho Candidate tắt Mic
     emitStopRecording(qId);
     // Tắt Mic của HR
@@ -116,7 +116,7 @@ export default function HRRoom({ roomCode }: HRRoomProps) {
         <div className="flex-1 p-4 space-y-3">
           {questions.map((q, idx) => (
             <div 
-              key={q._id} 
+              key={q.id || q._id} 
               className={`p-3 border rounded ${isRecording ? "opacity-50 cursor-not-allowed" : "cursor-pointer hover:bg-gray-50"} transition ${currentQuestionIndex === idx ? "border-blue-500 bg-blue-50" : ""}`}
               onClick={() => {
                 if (!isRecording) setCurrentQuestionIndex(idx);

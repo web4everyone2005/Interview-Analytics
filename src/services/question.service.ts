@@ -1,6 +1,4 @@
 import axiosInstance from "@/lib/axios";
-import axios from "axios";
-import { tokenStorage } from "@/lib/axios";
 import { ApiResponse } from "@/models/common.model";
 import {
   CreateQuestionPayload,
@@ -63,25 +61,11 @@ export const importQuestionsFromPdf = async (payload: {
     file: File;
     category_id: string;
 }): Promise<QuestionImportResponse> => {
-
-    const formData = new FormData();
-    formData.append("file", payload.file);
-    formData.append("category_id", payload.category_id);
-
-    const uploadUrl = `${process.env.NEXT_PUBLIC_API_BASE_URL}/questions/import-pdf`;
-
-    const token = tokenStorage.getAccessToken();
-
-    const { data } = await axios.post<QuestionImportResponse>(
-        uploadUrl, 
-        formData,
+    const { data } = await axiosInstance.postForm<QuestionImportResponse>(
+        "/questions/import-pdf",
         {
-            withCredentials: true, 
-            headers: {
-                "Content-Type": "multipart/form-data",
-              
-                ...(token ? { Authorization: `Bearer ${token}` } : {})
-            },
+            file: payload.file,
+            category_id: payload.category_id,
         }
     );
     return data;
