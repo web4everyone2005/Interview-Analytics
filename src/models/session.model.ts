@@ -38,6 +38,7 @@ export interface Session {
   status: SessionStatus | string;
   room_code: string;
   scheduled_at?: string;
+  magic_link_token?: string;
   createdAt: string;
   updatedAt: string;
 }

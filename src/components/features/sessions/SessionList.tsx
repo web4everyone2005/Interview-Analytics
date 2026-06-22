@@ -3,7 +3,7 @@
 import React, { useState } from "react";
 import { useSessions } from "@/hooks/useSession";
 import { Session, SessionStatus } from "@/models/session.model";
-import { Plus, Trash2, Edit, Video, Mail } from "lucide-react";
+import { Plus, Trash2, Edit, Video, Mail, Link2 } from "lucide-react";
 import SessionForm from "./SessionForm";
 import Link from "next/link";
 import { deleteSession, sendInvitation } from "@/services/session.service";
@@ -41,6 +41,16 @@ export default function SessionList() {
       alert("Đã gửi email thành công!");
     } catch (err: any) {
       alert(err.response?.data?.message || "Có lỗi khi gửi email.");
+    }
+  };
+
+  const handleCopyLink = async (token: string) => {
+    try {
+      const magicUrl = `${window.location.origin}/interview/join?token=${token}`;
+      await navigator.clipboard.writeText(magicUrl);
+      alert("Đã sao chép đường dẫn phỏng vấn ứng viên!");
+    } catch (err) {
+      alert("Lỗi khi sao chép link.");
     }
   };
 
@@ -123,6 +133,17 @@ export default function SessionList() {
                       >
                         <Mail size={18} />
                       </button>
+
+                      {/* Copy magic link */}
+                      {session.magic_link_token && (
+                        <button
+                          onClick={() => handleCopyLink(session.magic_link_token!)}
+                          className="text-gray-600 hover:text-indigo-600 hover:scale-105 transition-transform"
+                          title="Sao chép Link phỏng vấn"
+                        >
+                          <Link2 size={18} />
+                        </button>
+                      )}
 
                       <button onClick={() => handleOpenForm(session)} className="text-gray-600 hover:text-blue-600">
                         <Edit size={18} />
