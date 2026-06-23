@@ -8,8 +8,8 @@ import axios, {
 
 // ─── Constants ────────────────────────────────────────────────
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL || "http://localhost:5000/api/v1";
-const API_TIMEOUT = Number(process.env.NEXT_PUBLIC_API_TIMEOUT) || 10000;
-const ACCESS_TOKEN_KEY = "access_token";
+const API_TIMEOUT = Number(process.env.NEXT_PUBLIC_API_TIMEOUT) || 120*60*1000;
+const ACCESS_TOKEN_KEY = "access_token";    
 const REFRESH_TOKEN_KEY = "refresh_token";
 const ACCESS_TOKEN_COOKIE = "access_token";
 
