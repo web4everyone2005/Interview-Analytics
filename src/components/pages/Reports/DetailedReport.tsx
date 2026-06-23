@@ -180,7 +180,7 @@ export default function DetailedReport({ sessionId }: { sessionId: string }) {
                       <h4 className="text-xs font-semibold text-white/30 uppercase tracking-widest mb-2 flex items-center gap-2">
                         <Play size={14} /> Ghi âm
                       </h4>
-                      <audio controls className="w-full h-10 outline-none rounded-lg" src={detail.audio_url} />
+                      <audio controls crossOrigin="anonymous" className="w-full h-10 outline-none rounded-lg" src={detail.audio_url} />
                     </div>
                   )}
                 </div>
